@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>my heart 💌</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background-color: black;
+      color: white;
+    }
+    .screen {
+      display: none;
+      height: 100vh;
+      width: 100vw;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .active {
+      display: flex;
+    }
+    #titleScreen h1 {
+      font-size: 2.5em;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    #titleScreen button {
+      padding: 10px 20px;
+      font-size: 1.2em;
+      background: white;
+      color: black;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    #songListScreen {
+      align-items: stretch;
+      justify-content: flex-start;
+      padding: 20px 10px 60px;
+    }
+    #appTitle {
+      font-size: 2em;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    #songList {
+      overflow-y: auto;
+      flex: 1;
+    }
+    .songItem {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+      padding: 10px;
+      border-bottom: 1px solid white;
+      cursor: pointer;
+    }
+    .songItem img {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+      margin-right: 15px;
+    }
+    .songItem span {
+      font-size: 1.1em;
+    }
+    #playerScreen {
+      text-align: center;
+      padding: 20px;
+      position: relative;
+    }
+    #playerImage {
+      width: 90%;
+      max-width: 300px;
+      border-radius: 12px;
+      object-fit: cover;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    #lyricOverlay {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      max-width: 280px;
+      background: rgba(13, 0, 0, 0.9);
+      color: rgb(246, 241, 241);
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 0.95em;
+      display: none;
+    }
+    #audioPlayer {
+      width: 90%;
+      margin: 20px auto;
+    }
+    #backBtn {
+      padding: 10px 20px;
+      background: rgb(244, 241, 241);
+      color: rgb(17, 1, 1);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- Title Screen -->
+  <div id="titleScreen" class="screen active">
+    <h1>my heart 💌</h1>
+    <button onclick="showSongList()">Listen</button>
+  </div>
+
+  <!-- Song List Screen -->
+  <div id="songListScreen" class="screen">
+    <div id="appTitle">my heart 💌</div>
+    <div id="songList"></div>
+  </div>
+
+  <!-- Player Screen -->
+  <div id="playerScreen" class="screen">
+    <div style="position: relative;">
+      <img id="playerImage" src="" alt="Album" onclick="toggleLyrics()"/>
+      <div id="lyricOverlay"></div>
+    </div>
+    <h2 id="playerTitle"></h2>
+    <audio id="audioPlayer" controls autoplay></audio>
+    <div class="controlButtons">
+      <button onclick="playPrevious()">Previous</button>
+      <button onclick="goBack()">Back</button>
+      <button onclick="playNext()">Next</button>
+    </div>
+  </div>
+
+  <script>
+      const songs = [
+      { title: "no.1 party anthem-arctic monkeys", img: "assets/img1.jpg", audio: "assets/song1.mp3", lyric: " I put this first because this is your favorite song, i made this playlist for you, itf filled with your faves and songs that reminds me of you, each song has a message on it, i hope you like what i made^^" },
+      { title: "sinner - chska", img: "assets/img2.jpg", audio: "assets/song2.mp3", lyric: "this song is my favorite romantic, now it reminds me of you💌" },
+      { title: "Bad - wave to earth", img: "assets/img3.jpg", audio: "assets/song3.mp3", lyric: "hello love, i hope you know that you make me happy everyday, theres no bad days eversince i met you, you are the highlight of my everyday so how could my day be bad? i just wish that im always near to you, i always want to hug you so bad..." },
+      { title: "supernatural - ariana grande", img: "assets/img4.jpg", audio: "assets/song4.mp3", lyric: "Loving you feels supernatural, like something written in the stars. Your love is like a sunray touching my wings—gentle, bright, and powerful enough to lift me higher than I ever thought I could go. You make me glow, not just on the outside, but deep in my heart. Every moment with you feels golden, like the warm colors of a sunrise painting the sky. It’s soft, breathtaking, and full of quiet magic. That’s why you’re the best—because being with you feels like flying through a world where love is light, and you are the sun." },
+      { title: "warm - ariana grande", img: "assets/img5.jpg", audio: "assets/song5.mp3", lyric: "'cuz im cool on my own, and its warm in your arms' I grew up figuring things out on my own, I was really fine on my own, I thought I didnt need anybody else but sometimes I still cry...But when I met you, I fell inlove imediatly, I never knew I needed you, your love is warm and cozy, safe and sound, I wanna stay in that place forever I wanna stay in your arms." },
+      { title: "pete davidson - ariana grande", img: "assets/img6.jpg", audio: "assets/song6.mp3", lyric: "You are my soulmate, youre the one Ive been yearning for all my life, and finally god gave you to me. I promise you I will stay and nongthing can break us apart. You got me happy^^ and there will be no crying for me." },
+      { title: "imagine - ariana grande", img: "assets/img7.jpg", audio: "assets/song7.mp3", lyric: "This song makes me think of us—it’s like a glimpse into the future I keep dreaming about. I imagine a world where it’s just the two of us, wrapped in love, peace, and all the little moments that mean everything. Just imagine… waking up beside each other, sharing quiet mornings and late-night talks, building a life full of laughter, support, and so much love. It might just be a song, but to me, it’s a little reminder of the future I hope we create together—just you and me, always." },
+      { title: "easy - camila cabelo", img: "assets/img8.jpg", audio: "assets/song8.mp3", lyric: "I love how you just let me be me, y'know just bein goofy, and thank you for always forgiving me whenever I make a mistake, I promise to love you the same way as you love me too." },
+      { title: "i like me better-lauv", img: "assets/img9.jpg", audio: "assets/song9.mp3", lyric: "I like me better when im with you... Just knowing that youre with me and you love me just makes me feel so good, you are my safe space where I can be safe and be myself free from the judgement of the world." },
+      { title: "where you are - keenan", img: "assets/img10.jpg", audio: "assets/song10.mp3", lyric: "'Oh I know that you light up the world around you, Oh I cant believe that I found you'I really cant believe I found someone like you, you are the best Ive ever met, youre my everything nowI tried to run so far away from love, cuz what if im not good enough? And messed it up?'Theres this still fear inside me that I might mess things up, like those 'what ifs', I dont want to ruin our relationship because of me making lots of mistakes...But incase I do, all I needed is for you to listen and talk to me, if we ever have a fight, I could always make it up to you. I know love isnt perfect and it has to go through pain sometimes" },
+      { title: "love - wave to earth", img: "assets/img11.jpg", audio: "assets/song11.mp3", lyric: "My love, your love is all that I yearned for, your gaze, your smell, you touch, your smile, you kiss, your hands that I wish I could hold forever, I could never get enough of you." },
+      { title: "you and I - onedirection", img: "assets/img12.jpg", audio: "assets/song12.mp3", lyric: "You and I will never break apart, because I know we love eachother so much, I know to myself I'd do anything for you, ans Im afraid to loose you. So I will do anything" },
+      { title: "night changes - one direction", img: "assets/img13.jpg", audio: "assets/song13.mp3", lyric: "Even as the night changes and the world keeps moving, one thing will always stay the same—my love for you. Time might pass, we might grow and change in so many ways, but my heart will always be yours. No matter where life takes us or how things shift around us, nothing will ever change the way I feel about you. You’re my constant in a world full of change, and I’ll keep holding on—through every sunset, every starry night, and every new day." },
+      { title: "the night we met", img: "assets/img14.jpg", audio: "assets/song14.mp3", lyric: " Before you, I was just simply existing, travelling,being lost, trying hard, figuring things out, finding hope on my own. life was grey...but sisnce the day i met you my world bloomed in ways words cannot express, you give me hope, light, inspiration, effortlessly, you even painted my life in colors, with you life is just better, its beautiful" },
+      { title: "love scenario - ikon", img: "assets/img15.jpg", audio: "assets/song15.mp3", lyric: "this song is so cute" },
+      { title: "wanna be yours", img: "assets/img16.jpg", audio: "assets/song16.mp3", lyric: "There was a time I felt like I didn’t belong anywhere. Like no matter where I went or who I was with, something was always missing. I smiled, I laughed, but deep down, I felt like a piece that didn’t quite fit. But then you came into my life. And suddenly, everything made sense. Your presence felt like home—warm, safe, real. Now I know where I belong. Not in a place, not in a crowd, but with you. I belong to your heart, to your laughter, to the quiet moments we share. With you, I finally feel complete. With you, I’ve found where I’m meant to be. I belong to you." },
+      { title: "fate - enhypen", img: "assets/img17.jpg", audio: "assets/song17.mp3", lyric: "Some things are just meant to be—like you and me. Fate brought us together, and I’m so glad it did." },
+      { title: "moonstruck - enhypen", img: "assets/img18.jpg", audio: "assets/song18.mp3", lyric: "I just want to remind you to take good care of yourself because i will be sad if you dont, but even in days that you dont feel like taking care of yourself just call me and i will take care of you^^" },
+      { title: "blossom - enhypen", img: "assets/img19.jpg", audio: "assets/song19.mp3", lyric: "mon seul et unique amour" },
+      { title: "dito ka sakin - earl agustine", img: "assets/img20.jpg", audio: "assets/song20.mp3", lyric: " ikaw ang imahe sa aking mga obra, ikaw ang diwa sa aking mga tula, ikaw ang himig sa aking mga musika, ikaw ang inspiration sa aking mga sining, ikaw ang dahilan sa lahat ng aking ginagawa dahil ikaw ang mahal sa akng puso " },
+      { title: "residuals - chrs brown", img: "assets/img21.jpg", audio: "assets/song21.mp3", lyric: "every day every moment you give me a reason to fall inlove with you, you are everything I asked for so donr ever think ill get tired of you or overthink because my love for you iis endless" },
+      { title: "forever - chris brown", img: "assets/img22.jpg", audio: "assets/song22.mp3", lyric: " Love, I just want you to know that you dont need to change yourself for me because II love all of you, to me you dont have any flaws every side of you is perfect and also i love getting to know you more, if possible id like to see every side of you because your the only person i want to fully get to know and understand" },
+      { title: "shoutout - enhypen", img: "assets/img23.jpg", audio: "assets/song23.mp3", lyric: "If I could shout how much I love you to the whole world, I would. But for now, I’ll just whisper it a million times to you instead. 💕" },
+      { title: "dimple - bts", img: "assets/img24.jpg", audio: "assets/song24.mp3", lyric: "I don’t know how you do it, but every day I find a new reason to fall for you all over again" },
+      { title: "sudden shower", img: "assets/img25.jpg", audio: "assets/song25.mp3", lyric: "Sometimes I look up at the night sky and wonder how I got so lucky to have a love like this. You feel like the universe’s most beautiful secret — written in the stars just for me. With you, everything feels lighter, like I’m floating among constellations made of our memories. You’re the calm in my chaos, the moon to my tides, and the brightest star in my galaxy. I don’t need a shooting star to wish on anymore… because you’re already my wish come true. ✨🌙💫" },
+      { title: "sacrifice - enhypen", img: "assets/img26.jpg", audio: "assets/song26.mp3", lyric: "It’s the little sacrifices you make every day — like giving up your time just to talk to me, staying up a little later when you’re tired, or choosing to listen when you have a million other things on your mind — that show me how deeply you care. Those small, quiet moments add up to something huge. They build a love that feels real, steady, and unshakeable. I notice every one of them, even the ones you think go unseen, and they make me love you more than words can say..... You make me feel safe, chosen, and cherished — and I hope you always feel that from me too." },
+      { title: "paradise - chase atlantic", img: "assets/img27.jpg", audio: "assets/song27.mp3", lyric: "Home is nice, vacations are fun… but being with you? That’s my real paradise." },
+      { title: "fantasize - ariana grande", img: "assets/img28.jpg", audio: "assets/song28.mp3", lyric: ":0, im just surprised you like thiis song" },
+      { title: "right here - one direction", img: "assets/img29.jpg", audio: "assets/song29.mp3", lyric: "My Love, I just want you to know… I’m right here. Through the quiet days and the chaotic ones, through every laugh and every tear—I’m not going anywhere. No matter what life throws at us, I’ll be standing by your side, always. Sometimes the world moves too fast, and everything feels uncertain, but my love for you is the one thing that never changes. You don’t have to face anything alone. If your heart ever feels heavy, I’ll be the arms you can fall into. If your smile fades, I’ll be the reason it comes back. You don’t even have to say a word—I’ll know, and I’ll stay. You mean more to me than you probably realize. And if you ever wonder where I am, or how I feel—just remember this: I’m right here, loving you, endlessly. Always yours, -jeniee" },
+      { title: "strong - one direction", img: "assets/img30.jpg", audio: "assets/song30.mp3", lyric: " YOU MAKE ME STRONG i put this on the last of the playlist because its special, i love the message of the song, it perfectly captures how i feel, my love, you not only give me inspiration but also strength, strenght to face anything as long as youre with me, im not afraid of what the future holds... thank you for being with me and being my strength my love              also I love this picture of, its so cute, i just wish i grew up beside you, but since i cant, i dont need to anyways because when i met you i emmidiately felt like, ive known you for years, i knew youd be the one." }
+    ];
+
+    const titleScreen = document.getElementById("titleScreen");
+    const songListScreen = document.getElementById("songListScreen");
+    const playerScreen = document.getElementById("playerScreen");
+    const songList = document.getElementById("songList");
+    const playerImage = document.getElementById("playerImage");
+    const playerTitle = document.getElementById("playerTitle");
+    const audioPlayer = document.getElementById("audioPlayer");
+    const lyricOverlay = document.getElementById("lyricOverlay");
+
+    let currentSongIndex = 0;
+
+    function showSongList() {
+      titleScreen.classList.remove("active");
+      songListScreen.classList.add("active");
+    }
+
+    function loadSongs() {
+      songList.innerHTML = "";
+      songs.forEach((song, index) => {
+        const item = document.createElement("div");
+        item.className = "songItem";
+        item.onclick = () => playSong(index);
+        item.innerHTML = `
+          <img src="${song.img}" alt="${song.title}" />
+          <span>${song.title}</span>
+        `;
+        songList.appendChild(item);
+      });
+    }
+
+    function playSong(index) {
+      currentSongIndex = index;
+      const song = songs[index];
+      playerImage.src = song.img;
+      playerTitle.textContent = song.title;
+      audioPlayer.src = song.audio;
+      lyricOverlay.innerText = song.lyric;
+      lyricOverlay.style.display = "none";
+      songListScreen.classList.remove("active");
+      playerScreen.classList.add("active");
+    }
+
+    function toggleLyrics() {
+      lyricOverlay.style.display = lyricOverlay.style.display === "none" ? "block" : "none";
+    }
+
+    function goBack() {
+      audioPlayer.pause();
+      playerScreen.classList.remove("active");
+      songListScreen.classList.add("active");
+    }
+
+        function playPrevious() {
+      if (currentSongIndex > 0) {
+        playSong(currentSongIndex - 1);
+      }
+    }
+
+    function playNext() {
+      if (currentSongIndex < songs.length - 1) {
+        playSong(currentSongIndex + 1);
+      }
+    }
+
+    audioPlayer.addEventListener("ended", () => {
+      currentSongIndex = (currentSongIndex + 1) % songs.length;
+      playSong(currentSongIndex);
+    });
+
+    loadSongs();
+  </script>
+</body>
+</html>
+
